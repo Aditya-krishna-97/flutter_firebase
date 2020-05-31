@@ -1,5 +1,6 @@
 
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'navigation/fragments/home.dart';
@@ -36,6 +37,7 @@ class DrawerItem {
 
 class MyHomePage extends StatefulWidget {
 
+
   final drawerFragments = [
     new DrawerItem("Home", Icons.home, () => new Home()),
     new DrawerItem("COVID INDIA",Icons.change_history, () => new CovidIND()),
@@ -56,6 +58,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
+
   int _selectedDrawerFragmentIndex = 0;
   String name="";
   String mailid="";
@@ -64,7 +67,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   // ignore: must_call_super
   void initState() {
-    var fso = FirstScreen();
     name = 'Aditya';
     mailid = 'hdhhd';
   }
@@ -149,14 +151,19 @@ class _MyHomePageState extends State<MyHomePage> {
           width: MediaQuery.of(context).size.width * 0.75,
           child: new Drawer(
 
-            child: new Column(
-              children: <Widget>[
-                new UserAccountsDrawerHeader(
-                  accountName: new Text(name),
-                  accountEmail: new Text(mailid),
-                ),
-                new Column(children: drawerOptions)
-              ],
+            child: StreamBuilder<Object>(
+
+              builder: (context, snapshot) {
+                return new Column(
+                  children: <Widget>[
+                    new UserAccountsDrawerHeader(
+                      accountName: new Text(name),
+                      accountEmail: new Text(mailid),
+                    ),
+                    new Column(children: drawerOptions)
+                  ],
+                );
+              }
             ),
           ),
         ),

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:flutterfirebase/saving_to_localdb.dart';
 
 
 class FirstScreen extends StatelessWidget {
@@ -30,6 +32,7 @@ class A extends StatefulWidget {
 class _FirstScreenState extends State<A> {
   final db = Firestore.instance.collection("reference").document("users");
   final data = Firestore.instance;
+  final FirebaseDatabase rdb = FirebaseDatabase.instance;
 
   final _formKey = GlobalKey<FormState>();
   final name = TextEditingController();
@@ -38,6 +41,9 @@ class _FirstScreenState extends State<A> {
   String result = "";
   static String n,c,ph;
   String documentref;
+  final DbStudentManager dbStudentManager = new DbStudentManager();
+
+
 
   @override
   void dispose() {
@@ -101,53 +107,71 @@ class _FirstScreenState extends State<A> {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: RaisedButton(
-                      onPressed: (){
-                        if(_formKey.currentState.validate())
-                        {
-                          n = name.text.toString();
-                          c = city.text.toString();
-                          ph = phone.text.toString();
-                          print("name is $n");
-                          print("city is $c");
-                          print("phone number is $ph");
-                          Scaffold.of(context).showSnackBar(SnackBar(content: Text("Storing data to flutter-firebase"),));
-                          Scaffold.of(context).showSnackBar(SnackBar(content: Text("Name is $n" + " City is $c" + " phone number is $ph"),));
-                        // db.collection("refeference").document("users").collection(ph).add({'name': n,'doc-ref':'a'});
+                    child: Container(
+                      child: Column(
+                        children: <Widget>[
+                          RaisedButton(
+                            onPressed: (){
+                              n = name.text.toString();
+                              c = city.text.toString();
+                              ph = phone.text.toString();
+                              if(_formKey.currentState.validate() && (rdb.reference().child(ph) != null))
+                                //checks if form is valid and if phone number does not exist then user gets created
+                                  {
+                                //here we call a function to store data to localdb
+                                submitting_to_local_db();
+                                print("name is $n");
+                                print("city is $c");
+                                print("phone number is $ph");
+                                Scaffold.of(context).showSnackBar(SnackBar(content: Text("Storing data to flutter-firebase"),));
+                                Scaffold.of(context).showSnackBar(SnackBar(content: Text("Name is $n" + " City is $c" + " phone number is $ph"),));
+                                // db.collection("refeference").document("users").collection(ph).add({'name': n,'doc-ref':'a'});
 
-                          data.collection("users").add(
-                              {
-                            'name' : n,
-                            'city' : c,
-                                'phone-number' : ph,
-                                "timestamp" : new DateTime.now()
-                          }
-                          ).then((response)
-                          {
-                            documentref = response.documentID.toString();
-                            print(documentref);
-                          }    );
+                                data.collection("users").add(
+                                    {
+                                      'name' : n,
+                                      'city' : c,
+                                      'phone-number' : ph,
+                                      "timestamp" : new DateTime.now()
+                                    }
+                                ).then((response)
+                                {
+                                  documentref = response.documentID.toString();
+                                  print("Document reference number is $documentref");
+                                  rdb.reference().child(ph).set(<String,String>{'documentref':documentref,'name':n});
+                                }    );
 
 
 
-                          //    if(name.text.isNotEmpty && city.text.isNotEmpty )
-                          //    {
-                      //    Firestore.instance.collection("board").add({
-                      //      "name" : n,
-                      //      "city" : c,
-                      //      "timestamp" : new DateTime.now()
-                      //    }).then((response){
-                      //      print(response.documentID);
-                     //       Navigator.pop(context);
-                    //      }).catchError((error) => print(error));
-                          //  }
-                        }
 
-                        //db.collection(ph).add({'name':n,'doc_ref':documentref});
-                        //db.document(ph).add({'name':n,'doc_ref':documentref});
-                      },
-                      child: Text('Submit'),
+
+                                //    if(name.text.isNotEmpty && city.text.isNotEmpty )
+                                //    {
+                                //    Firestore.instance.collection("board").add({
+                                //      "name" : n,
+                                //      "city" : c,
+                                //      "timestamp" : new DateTime.now()
+                                //    }).then((response){
+                                //      print(response.documentID);
+                                //       Navigator.pop(context);
+                                //      }).catchError((error) => print(error));
+                                //  }
+                              }
+                              else{
+                                print("user already exists");
+                                Scaffold.of(context).showSnackBar(SnackBar(content: Text("User already exists"),));
+                              }
+
+                              //db.collection(ph).add({'name':n,'doc_ref':documentref});
+                              //db.document(ph).add({'name':n,'doc_ref':documentref});
+                            },
+                            child: Text('Submit'),
+                          ),
+                        ],
+                      ),
+
                     ),
+                    
                   )
                 ],
               ),
@@ -155,4 +179,15 @@ class _FirstScreenState extends State<A> {
         )
     );
   }
+
+   submitting_to_local_db() async {
+    User u = new User(dbid: documentref, name: n);
+
+    dbStudentManager.insert(u).then((db) =>
+    {
+      print('Data added to $db'),
+    });
+  }
+
+
 }

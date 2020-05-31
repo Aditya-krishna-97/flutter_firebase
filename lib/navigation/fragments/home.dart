@@ -17,6 +17,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+  var firestoreDb = Firestore.instance.collection('district').snapshots();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,10 +29,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _buildBody(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection('baby').snapshots(),
+      stream: firestoreDb,
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
-
         return _buildList(context, snapshot.data.documents);
       },
     );
@@ -47,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return Padding(
       
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
       child: Container(
         decoration: BoxDecoration(
           border: Border.all(color: Colors.red),
@@ -56,11 +58,14 @@ class _MyHomePageState extends State<MyHomePage> {
         child: ListTile(
           title: Text(record.name),
           trailing: Text(record.votes.toString()),
-          onTap: () => record.reference.updateData({'votes': FieldValue.increment(1)}),
+// Disabled on tap          onTap: () => record.reference.updateData({'cases': FieldValue.increment(1)}),
         ),
       ),
     );
   }
+
+
+
 }
 
 class Record {
@@ -70,9 +75,9 @@ class Record {
 
   Record.fromMap(Map<String, dynamic> map, {this.reference})
       : assert(map['name'] != null),
-        assert(map['votes'] != null),
+        assert(map['cases'] != null),
         name = map['name'],
-        votes = map['votes'];
+        votes = map['cases'];
 
   Record.fromSnapshot(DocumentSnapshot snapshot)
       : this.fromMap(snapshot.data, reference: snapshot.reference);
