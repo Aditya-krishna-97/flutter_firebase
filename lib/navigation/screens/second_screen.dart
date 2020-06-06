@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutterfirebase/getting_data_from_firestore.dart';
 
 
 class SecondScreen extends StatefulWidget {
@@ -10,6 +11,7 @@ class SecondScreen extends StatefulWidget {
 }
 
 class _SecondScreenState extends State<SecondScreen> {
+
   var firestoreDb = Firestore.instance.collection("users").snapshots();
   String ph;
   @override
@@ -32,14 +34,18 @@ class _SecondScreenState extends State<SecondScreen> {
                     {
                       print(snapshot.data.documents[index]['name']);
                     }
+                  print("printing all names");
+
                   //print(snapshot.data.documents[index]['phone-number']);
                 }
+              print(snapshot.data.documents[index]['phone-number']);
               return Text(
                 ph,
               );
-              });
-
+              }
+              );
         }),
+
     );
   }
 }

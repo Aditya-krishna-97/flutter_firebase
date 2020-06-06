@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutterfirebase/getting_data_from_firestore.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -30,7 +31,6 @@ class A extends StatefulWidget {
 }
 
 class _FirstScreenState extends State<A> {
-  final db = Firestore.instance.collection("reference").document("users");
   final data = Firestore.instance;
   final FirebaseDatabase rdb = FirebaseDatabase.instance;
 
@@ -41,12 +41,13 @@ class _FirstScreenState extends State<A> {
   String result = "";
   static String n,c,ph;
   String documentref;
-  final DbStudentManager dbStudentManager = new DbStudentManager();
+
 
 
 
   @override
   void dispose() {
+
     name.dispose();
     super.dispose();
   }
@@ -81,13 +82,13 @@ class _FirstScreenState extends State<A> {
                   ),
                   TextFormField(
                     decoration: const InputDecoration(
-                        labelText: 'Enter your city'
+                        labelText: 'Enter your district'
                     ),
                     controller: city,
                     validator: (value){
                       if(value.isEmpty)
                       {
-                        return 'Please enter your city';
+                        return 'Please enter your district';
                       }
                       return null;
                     },
@@ -118,8 +119,8 @@ class _FirstScreenState extends State<A> {
                               if(_formKey.currentState.validate() && (rdb.reference().child(ph) != null))
                                 //checks if form is valid and if phone number does not exist then user gets created
                                   {
-                                //here we call a function to store data to localdb
-                                submitting_to_local_db();
+
+
                                 print("name is $n");
                                 print("city is $c");
                                 print("phone number is $ph");
@@ -130,7 +131,7 @@ class _FirstScreenState extends State<A> {
                                 data.collection("users").add(
                                     {
                                       'name' : n,
-                                      'city' : c,
+                                      'district' : c,
                                       'phone-number' : ph,
                                       "timestamp" : new DateTime.now()
                                     }
@@ -180,14 +181,7 @@ class _FirstScreenState extends State<A> {
     );
   }
 
-   submitting_to_local_db() async {
-    User u = new User(dbid: documentref, name: n);
 
-    dbStudentManager.insert(u).then((db) =>
-    {
-      print('Data added to $db'),
-    });
-  }
 
 
 }

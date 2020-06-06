@@ -2,9 +2,17 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterfirebase/datasource.dart';
+import 'package:flutterfirebase/navigation/fragments/gridview.dart';
+import 'package:flutterfirebase/navigation/screens.dart';
+import 'package:flutterfirebase/navigation/screens/fifth_screen.dart';
+import 'package:flutterfirebase/panels/indiadatapanel.dart';
+import 'package:flutterfirebase/panels/worlddatapanel.dart';
 
+import 'getting_data_from_firestore.dart';
 import 'navigation/fragments/home.dart';
 import 'navigation/fragments/india.dart';
+import 'navigation/fragments/streaming.dart';
 import 'navigation/fragments/world.dart';
 
 
@@ -12,16 +20,19 @@ import 'navigation/screens/first_screen.dart';
 import 'navigation/screens/second_screen.dart';
 import 'navigation/screens/third_screen.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(
+    MyApp(),
+);
+
+
 
 class MyApp extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primaryColor: primaryBlack,
       ),
       home: MyHomePage(),
     );
@@ -33,10 +44,10 @@ class DrawerItem {
   IconData icon;
   Function body;
   DrawerItem(this.title, this.icon, this.body);
+
 }
 
 class MyHomePage extends StatefulWidget {
-
 
   final drawerFragments = [
     new DrawerItem("Home", Icons.home, () => new Home()),
@@ -45,9 +56,13 @@ class MyHomePage extends StatefulWidget {
   ];
 
   final drawerScreens = [
-    new DrawerItem("Profile1", Icons.add_circle, () => new FirstScreen()),
-    new DrawerItem("Profile2", Icons.add_circle, () => new SecondScreen()),
-    new DrawerItem("Screen 3", Icons.all_inclusive, () => new ThirdScreen())
+    new DrawerItem("Profile", Icons.add_circle, () => new FirstScreen()),
+    new DrawerItem("UsersData", Icons.add_circle, () => new SecondScreen()),
+    new DrawerItem("Feedback", Icons.all_inclusive, () => new ThirdScreen()),
+   // new DrawerItem("Fourth", Icons.all_inclusive, () => new FourthScreen()),
+    new DrawerItem("Fifth", Icons.ac_unit,() => new FifthScreen()),
+    new DrawerItem("Streaming", Icons.accessibility, () => new Hscreen()),
+    new DrawerItem("Gview", Icons.accessibility, () => new Gview()),
   ];
 
   MyHomePage({Key key}) : super(key: key);
@@ -57,7 +72,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
+  Future<void> fetc() async{
+    GetData gd = new GetData();
+    dynamic iactive = await gd.getData();
+  }
 
   int _selectedDrawerFragmentIndex = 0;
   String name="";
@@ -68,7 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
   // ignore: must_call_super
   void initState() {
     name = 'Aditya';
-    mailid = 'hdhhd';
+    mailid = 'aditya.krishna.97@gmail.com';
   }
 
   _getDrawerFragmentWidgetIndex(int pos) {

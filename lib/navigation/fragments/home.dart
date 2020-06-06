@@ -1,5 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterfirebase/datasource.dart';
+import 'package:flutterfirebase/getting_data_from_firestore.dart';
+import 'package:flutterfirebase/panels/indiadatapanel.dart';
+
+import 'package:flutterfirebase/panels/worlddatapanel.dart';
 
 
 class Home extends StatelessWidget {
@@ -11,12 +17,77 @@ class Home extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   @override
-  _MyHomePageState createState() {
-    return _MyHomePageState();
-  }
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+
+
+
+  String worldwide = "Worldwide";
+  var firestoreDb = Firestore.instance.collection('district').snapshots();
+  @override
+  Widget build(BuildContext context) {
+
+   // getData.gettingData();
+    return Scaffold(
+    body: SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            height: 100,
+            alignment: Alignment.center,
+            padding: EdgeInsets.all(10),
+            color: Colors.orange.shade100,
+            child: Text(
+              DataSource.quote,
+              style: TextStyle(
+                color: Colors.orange.shade800,
+                fontWeight: FontWeight.bold,
+                  fontSize: 16
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0,horizontal: 10.0),
+            child: Text(
+              worldwide,
+              style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold),
+            ),
+          ),
+          WorldDataPanel(),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0,horizontal: 10.0),
+            child: Text(
+              'INDIA',
+              style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold),
+            ),
+          ),
+          IndiaDataPanel(),
+        ],
+      ),
+    ),
+    );
+  }
+
+  @override
+  void initState() {
+    GetData getData = new GetData();
+    getData.getData();
+  }
+}
+
+
+
+
+//below code is used to get data from firestore and also update it in realtime.
+/*class _MyHomePageState extends State<MyHomePage> {
 
   var firestoreDb = Firestore.instance.collection('district').snapshots();
 
@@ -48,7 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final record = Record.fromSnapshot(data);
 
     return Padding(
-      
+
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
       child: Container(
         decoration: BoxDecoration(
@@ -85,3 +156,4 @@ class Record {
   @override
   String toString() => "Record<$name:$votes>";
 }
+*/
